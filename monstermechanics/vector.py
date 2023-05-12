@@ -43,7 +43,7 @@ def cached(func):
             The getter function to decorate.
 
     """
-    cached_name = "_cached_%s" % func.func_name
+    cached_name = f"_cached_{func.func_name}"
 
     # The keywords 'getattr' and 'cached_name' are used to optimise the common
     # case (return cached value) by bringing the used names to local scope.
@@ -59,8 +59,8 @@ def cached(func):
         assert not hasattr(self, cached_name)
         setattr(self, cached_name, value)
 
-    fget.func_name = "get_" + func.func_name
-    fset.func_name = "set_" + func.func_name
+    fget.func_name = f"get_{func.func_name}"
+    fset.func_name = f"set_{func.func_name}"
 
     return property(fget, fset, doc=func.func_doc)
 
@@ -269,9 +269,7 @@ class Vector(tuple):
                 The length to which to scale.
 
         """
-        if self.is_zero:
-            return self
-        return self.scaled_to(length)
+        return self if self.is_zero else self.scaled_to(length)
 
     def normalised(self):
         """Compute the vector scaled to unit length.
@@ -288,9 +286,7 @@ class Vector(tuple):
         if it was the zero vector.
 
         """
-        if self.is_zero:
-            return self
-        return self.normalised()
+        return self if self.is_zero else self.normalised()
 
     def perpendicular(self):
         """Compute the perpendicular.
@@ -805,9 +801,7 @@ def v(*args):
     forms are therefore: ``v((x, y))`` and ``v(x, y)``.
 
     """
-    if len(args) == 1:
-        return Vector(args[0])
-    return Vector(args)
+    return Vector(args[0]) if len(args) == 1 else Vector(args)
 
 
 #: The zero vector.

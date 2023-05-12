@@ -32,8 +32,7 @@ class Thistle(Actor):
             self.world.destroy(self)
             return
         for enemy in self.world.get_enemies_for_name(self.name):
-            part = enemy.colliding(self)
-            if part:
+            if part := enemy.colliding(self):
                 self.on_hit(part)
 
     def get_damage(self):

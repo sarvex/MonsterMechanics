@@ -148,13 +148,10 @@ class Editor(object):
 
     @staticmethod
     def load(name, template=None):
-        if template is not None:
-            sname = template
-        else:
-            sname = name
+        sname = template if template is not None else name
         try:
             # load component from file
-            with open('data/components/%s.json' % sname) as f:
+            with open(f'data/components/{sname}.json') as f:
                 dat = json.loads(f.read())
         except (IOError, ValueError):
             return Editor.blank(name)
@@ -169,21 +166,16 @@ class Editor(object):
         ox, oy = self.shapes[0].offset
         radius = self.shapes[0].radius
 
-        points = []
-        for s in self.shapes[1:]:
-            if s is None or s.hidden:
-                continue
-            points.append({
-                'name': s.name,
-                'radius': s.radius,
-                'offset': s.offset
-            })
-            
+        points = [
+            {'name': s.name, 'radius': s.radius, 'offset': s.offset}
+            for s in self.shapes[1:]
+            if s is not None and not s.hidden
+        ]
         return {
-            'name': 'sprites/%s.png' % self.name,
+            'name': f'sprites/{self.name}.png',
             'radius': radius,
             'offset': (-ox, -oy),
-            'points': points
+            'points': points,
         }
 
     def save(self):
@@ -250,10 +242,10 @@ class Editor(object):
     def on_mousemove(self, event):
         pos = self.screen_to_rel(event.pos)
 
-        dx = pos[0] - self.lastpos[0]
-        dy = pos[1] - self.lastpos[1]
-
         if self.dragging:
+            dx = pos[0] - self.lastpos[0]
+            dy = pos[1] - self.lastpos[1]
+
             self.dragging.move_by(dx, dy)
         else:
             self.handle_for_mouse(pos)
@@ -277,8 +269,6 @@ class Editor(object):
             self.toggle_shape(2)
         elif event.key == pygame.K_3:
             self.toggle_shape(3)
-        elif event.key == pygame.K_3:
-            self.toggle_shape(4)
         elif event.key == pygame.K_s:
             self.save()
         elif event.key == pygame.K_ESCAPE:

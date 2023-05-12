@@ -20,10 +20,7 @@ class World(object):
     def get_monster_bounds(self):
         bounds = None
         for m in self.monsters:
-            if bounds is None:
-                bounds = m.get_bounds()
-            else:
-                bounds = bounds.union(m.get_bounds())
+            bounds = m.get_bounds() if bounds is None else bounds.union(m.get_bounds())
         return bounds
 
     def get_player(self):

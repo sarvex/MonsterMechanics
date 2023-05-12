@@ -7,10 +7,10 @@ import math
 
 
 def make_bitmasks():
-    namebits = {}
-    for bit, (name, collideswith) in enumerate(COLLISION_CLASSES):
-        namebits[name] = 1 << bit
-
+    namebits = {
+        name: 1 << bit
+        for bit, (name, collideswith) in enumerate(COLLISION_CLASSES)
+    }
     classes = {}
     for name, collideswith in COLLISION_CLASSES:
         mask = 0

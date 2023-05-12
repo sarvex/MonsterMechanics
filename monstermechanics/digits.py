@@ -36,10 +36,7 @@ class Digits(object):
         return [int(c) for c in str(int(self.display_value + 0.5))]
 
     def get_width(self):
-        w = 0
-        for d in self.get_digits():
-            w += self.images[d].width
-        return w
+        return sum(self.images[d].width for d in self.get_digits())
     
     def update(self, dt):
         self.display_value = self.value + (self.display_value - self.value) * 0.1 ** (dt * 2)

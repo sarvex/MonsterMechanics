@@ -80,10 +80,7 @@ class Game(object):
         self.timers.append((callback, duration))
 
     def unset_timer(self, callback):
-        ts = []
-        for c, duration in self.timers:
-            if c is not callback:
-                ts.append((c, duration))
+        ts = [(c, duration) for c, duration in self.timers if c is not callback]
         self.timers = ts
 
     def update_timers(self, dt):
@@ -187,7 +184,7 @@ class Game(object):
         try:
             pic = self.loaded_images[fname]
         except KeyError:
-            path = 'ui/%s.png' % fname
+            path = f'ui/{fname}.png'
             pic = pyglet.resource.image(path)
             pic.anchor_x = pic.width // 2
             pic.anchor_y = pic.height // 2
@@ -235,8 +232,8 @@ class Game(object):
             os.makedirs(path)
         except (OSError, IOError):
             pass
-        take_screenshot(self.window, filename=os.path.join(path, hash + '.jpg'))
-        with open(os.path.join(path, hash + '.json'), 'w') as f:
+        take_screenshot(self.window, filename=os.path.join(path, f'{hash}.jpg'))
+        with open(os.path.join(path, f'{hash}.json'), 'w') as f:
             f.write(js)
 
     def on_key_press(self, symbol, modifiers):

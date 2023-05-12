@@ -26,10 +26,7 @@ class PartIcon(object):
 
     def set_disabled(self, disabled):
         self.disabled = disabled
-        if disabled:
-            self.sprite.opacity = 128
-        else:
-            self.sprite.opacity = 255
+        self.sprite.opacity = 128 if disabled else 255
 
     def contains(self, point):
         x, y = self.sprite.position
@@ -80,7 +77,7 @@ class PartHud(object):
 
     def draw_level(self, pos):
         p = pos
-        for i in range(self.part.level):
+        for _ in range(self.part.level):
             self.star.blit(*p)
             p += v(self.star.width, 0)
         if self.part.can_upgrade():
@@ -232,8 +229,7 @@ class Shelf(object):
                     self.scroll_y = min(max_scroll, self.scroll_y - scroll_y * 30)
 
     def on_mouse_motion(self, x, y, dx, dy):
-        icon = self.icon_for_point(x, y)
-        if icon:
+        if icon := self.icon_for_point(x, y):
             self.cost_value = self.icons[icon].cost
         else:
             self.cost_value = None
@@ -252,7 +248,7 @@ class Shelf(object):
             if self.parthud and not self.parthud.locked:
                 self.parthud = None
             return
-    
+
         if self.parthud is None or part is not self.parthud.part:
             self.parthud = PartHud(part)
 

@@ -7,7 +7,7 @@ from geom import Circle
 
 
 def load_resource(resource_file):
-    with pyglet.resource.file('components/%s.json' % resource_file) as f:
+    with pyglet.resource.file(f'components/{resource_file}.json') as f:
         definition = json.loads(f.read())
 
     # load the associated image
@@ -24,7 +24,7 @@ def load_resource(resource_file):
     for p in definition.get('points', []):
         centre = v(p['offset']) + offset
         circles.append(Circle(v(centre.x, -centre.y), p['radius']))
-    definition['shapes'] = circles 
+    definition['shapes'] = circles
     return definition
 
 
@@ -51,10 +51,7 @@ class Actor(object):
         self.set_part(self.DEFAULT_PART)
 
     def set_part(self, name):
-        if self.name == 'enemy':
-            qname = 'enemy-' + name
-        else:
-            qname = name
+        qname = f'enemy-{name}' if self.name == 'enemy' else name
         try:
             self.part = self.resources[qname]
         except KeyError:
@@ -90,10 +87,7 @@ class Actor(object):
         return self.get_shapes()[0]
 
     def get_position(self):
-        if self.body:
-            return self.body.get_position()
-        else:
-            return v(*self.sprite.position)
+        return self.body.get_position() if self.body else v(*self.sprite.position)
 
     def set_position(self, pos):
         """Move the part."""

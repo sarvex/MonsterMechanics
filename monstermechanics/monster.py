@@ -120,8 +120,7 @@ class BodyPart(Actor):
 
     @classmethod
     def from_json(cls, js, name='player'):
-        inst = cls(v(*js['position']), name=name)
-        return inst
+        return cls(v(*js['position']), name=name)
 
     def get_bounds(self):
         ang = self.sprite.rotation * math.pi / 180
@@ -132,10 +131,7 @@ class BodyPart(Actor):
             center = center.rotated(ang) + basepos
             diag = v(-s.radius, s.radius)
             sbounds = Rect(center + diag, center - diag)
-            if bounds is None:
-                bounds = sbounds
-            else:
-                bounds = bounds.union(sbounds)
+            bounds = sbounds if bounds is None else bounds.union(sbounds)
         return bounds
 
     _parent = None
@@ -147,7 +143,7 @@ class BodyPart(Actor):
             self._parent._joints = [(p, j) for p, j in self._parent._joints if p is not self]
 
         for p, radius in self.get_shapes():
-            for i in range(int(radius * radius / 100.0)):
+            for _ in range(int(radius * radius / 100.0)):
                 off = v(random.gauss(0, radius * 0.5), random.gauss(0, radius * 0.5))
                 self.world.spawn(Blood(self.get_position() + p + off, name=''))
 
@@ -160,19 +156,16 @@ class BodyPart(Actor):
 
 def resource_levels(base):
     return {
-        'level1': '%s-level1' % base,
-        'level2': '%s-level2' % base,
-        'level3': '%s-level3' % base,
-        'enemy-level1': 'enemy-%s-level1' % base,
-        'enemy-level2': 'enemy-%s-level2' % base,
-        'enemy-level3': 'enemy-%s-level3' % base,
+        'level1': f'{base}-level1',
+        'level2': f'{base}-level2',
+        'level3': f'{base}-level3',
+        'enemy-level1': f'enemy-{base}-level1',
+        'enemy-level2': f'enemy-{base}-level2',
+        'enemy-level3': f'enemy-{base}-level3',
     }
 
 def single_resource(name):
-    return {
-        'default': name,
-        'enemy-default': 'enemy-' + name
-    }
+    return {'default': name, 'enemy-default': f'enemy-{name}'}
     
 
 class UpgradeablePart(BodyPart):
@@ -529,10 +522,7 @@ class Monster(object):
     def get_bounds(self):
         bounds = None
         for p in self.parts:
-            if bounds is None:
-                bounds = p.get_bounds()
-            else:
-                bounds = bounds.union(p.get_bounds())
+            bounds = p.get_bounds() if bounds is None else bounds.union(p.get_bounds())
         return bounds
 
     def get_mutagen_capacity(self):
@@ -712,10 +702,7 @@ class Monster(object):
     @staticmethod
     def from_json(world, json, name):
 
-        classes = {}
-        for n, cls in PART_CLASSES.items():
-            classes[cls.__name__] = cls
-
+        classes = {cls.__name__: cls for n, cls in PART_CLASSES.items()}
         part_map = {}
         parts = []
         for p in json['parts']:
